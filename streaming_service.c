@@ -93,20 +93,7 @@ int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
     NewMovie->info.year = year ;
     NewMovie->next = NULL ;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*struct new_movie *temp = new_movies_head;
+    struct new_movie *temp = new_movies_head;
     struct new_movie *prev = NULL;
     while(temp != NULL) {
         if (temp->info.mid > mid) {
@@ -122,9 +109,6 @@ int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
         prev->next = NewMovie;
     }
     NewMovie->next = temp;
-    */
-
-
 
     return 0;
 
