@@ -48,8 +48,8 @@ void init_structures(void)
     /* Initialize new releases list */
     new_movies_head = NULL;
     /* Initialize category table */
-    int i;
-    for ( i = 0; i < 6; i++)
+    int i ;
+    for (i = 0; i < 6; i++)
     {
         category_table[i] = NULL;
     }
@@ -141,36 +141,39 @@ int main(int argc, char *argv[])
             case 'D':
                 distribute_new_movies();
                 break;
-                  case 'W':
-                      if (sscanf(trimmed_line, "W %d %u", &uid, &mid) != 2) {
-                          fprintf(stderr, "Event W parsing error\n");
-                          break;
-                      }
-                      watch_movie(uid, mid);
-                      break;
-                 /* case 'S':
-                      if (sscanf(trimmed_line, "S %d", &uid) != 1) {
-                          fprintf(stderr, "Event S parsing error\n");
-                          break;
-                      }
-                      suggest_movies(uid);
-                      break;
-                  case 'F':
-                      if (sscanf(trimmed_line, "F %d %d %d %u", &uid, &category1,
-                                  &category2, &year) != 4) {
-                          fprintf(stderr, "Event F parsing error\n");
-                          break;
-                      }
-                      filtered_movie_search(uid, category1, category2, year);
-                      break;
-                  case 'T':
-                      if (sscanf(trimmed_line, "T %u", &mid) != 1) {
-                          fprintf(stderr, "Event T parsing error\n");
-                          break;
-                      }
-                      take_off_movie(mid);
-                      break;
-                  */case 'M':
+                 case 'W':
+                     if (sscanf(trimmed_line, "W %d %u", &uid, &mid) != 2) {
+                         fprintf(stderr, "Event W parsing error\n");
+                         break;
+                     }
+                     printf("\n");
+                     watch_movie(uid, mid);
+                     /*print_users_history();*/
+                print_user_history(uid);
+                break;
+                /* case 'S':
+                     if (sscanf(trimmed_line, "S %d", &uid) != 1) {
+                         fprintf(stderr, "Event S parsing error\n");
+                         break;
+                     }
+                     suggest_movies(uid);
+                     break;
+                 case 'F':
+                     if (sscanf(trimmed_line, "F %d %d %d %u", &uid, &category1,
+                                 &category2, &year) != 4) {
+                         fprintf(stderr, "Event F parsing error\n");
+                         break;
+                     }
+                     filtered_movie_search(uid, category1, category2, year);
+                     break;
+                 case 'T':
+                     if (sscanf(trimmed_line, "T %u", &mid) != 1) {
+                         fprintf(stderr, "Event T parsing error\n");
+                         break;
+                     }
+                     take_off_movie(mid);
+                     break;
+                 */case 'M':
                 print_movies();
                 break;
             case 'P':

@@ -87,13 +87,14 @@ void unregister_user(int uid){
     }*/
     temp->suggestedHead = NULL;
     temp->suggestedTail = NULL;
-    /*free watch history*/
+    /*free watch history
     struct movie *temp_movie = temp->watchHistory;
     while(temp_movie != NULL){
         struct movie *temp_movie_next = temp_movie->next;
         free(temp_movie);
         temp_movie = temp_movie_next;
-    }
+    }*/
+    temp->watchHistory = NULL;
 
     /*remove user from list*/
     if(prev == NULL){
@@ -117,7 +118,7 @@ int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
 
     struct new_movie *temp = new_movies_head;
     struct new_movie *prev = NULL;
-    while(temp != NULL) {
+    while(temp != NULL) {   /*find the first bigger mid and insert behind it*/
         if (temp->info.mid > mid) {
             break;
         }
@@ -152,7 +153,7 @@ void Insert(struct new_movie *pMovie) {
     last->next = Newnode;
 
 }
-
+/*EVENT D*/
 void distribute_new_movies(void){
     struct new_movie *temp = new_movies_head;
     struct new_movie *prev = NULL;
@@ -183,7 +184,9 @@ void print_movies(void){
     }
     printf("DONE\n");
 }
-void Insert_W(struct user *pUser,struct movie *pMovie) {
+
+void Insert_W(struct user *pUser ,struct movie *pMovie) {
+
     struct movie *Newnode = (struct movie*) malloc(sizeof(struct movie));
     Newnode->info.mid = pMovie->info.mid;
     Newnode->info.year = pMovie->info.year;
@@ -199,18 +202,60 @@ void Insert_W(struct user *pUser,struct movie *pMovie) {
         temp = temp->next;
     }
     last->next = Newnode;
+}
+void print_users_history(){
+    struct user *temp = user_head;
 
+    while(temp->uid != user_Sentinel->uid){
+        printf("User %d Watch History: ",temp->uid);
+        struct movie *temp_movie = temp->watchHistory;
+        while(temp_movie != NULL){
+            printf("<%u,%u>",temp_movie->info.mid,temp_movie->info.year);
+            temp_movie = temp_movie->next;
+            if(temp_movie != NULL){
+                printf(" , ");
+            }
+        }
+        printf("\n");
+        temp = temp->next;
+    }
+    printf("DONE\n");
+    printf("\n");
+}
+
+void print_user_history(int uid){
+    struct user *temp = user_head;
+    while(temp->uid != user_Sentinel->uid){
+        if(temp->uid == uid){
+            break;
+        }
+        temp = temp->next;
+    }
+    if(temp->uid == user_Sentinel->uid){
+        return;
+    }
+    struct movie *temp_movie = temp->watchHistory;
+    printf("User %d Watch History: ",temp->uid);
+    while (temp_movie!= NULL){
+        printf("<%u,%u>",temp_movie->info.mid,temp_movie->info.year);
+        temp_movie = temp_movie->next;
+        if(temp_movie != NULL){
+            printf(" , ");
+        }
+    }
+    printf("\nDONE\n");
 }
 
 int watch_movie(int uid, unsigned mid){
     struct user *temp_user = user_head;
-    while(temp_user != NULL) {
+
+    while(temp_user->uid != user_Sentinel->uid) {
         if (temp_user->uid == uid) {
             break;
         }
         temp_user = temp_user->next;
     }
-    if(temp_user == NULL){
+    if(temp_user->uid == user_Sentinel->uid){
         return -1;
     }
     int i ;
@@ -233,23 +278,5 @@ int watch_movie(int uid, unsigned mid){
         return -1;
     }
     Insert_W(temp_user,temp_movie);
-    /*print ALL THE USERS with their watch history*/
-    struct user *temp = user_head;
-    while(temp->uid != user_Sentinel->uid){
-        printf("User %d: ",temp->uid);
-        struct movie *temp_movie = temp->watchHistory;
-        while(temp_movie != NULL){
-            printf("<%u,%u>",temp_movie->info.mid,temp_movie->info.year);
-            temp_movie = temp_movie->next;
-            if(temp_movie != NULL){
-                printf(" , ");
-            }
-        }
-        printf("\n");
-        temp = temp->next;
-    }
-    printf("DONE\n");
-    printf("\n");
     return 0;
 }
-
