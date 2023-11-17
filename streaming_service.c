@@ -2,46 +2,68 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct user *user_head = NULL;
-struct  new_movie *new_movies_head = NULL;
+struct user *user_head ;
+struct user *user_Sentinel;
+struct  new_movie *new_movies_head;
+struct movie *category_table[6];
+
+
 
 void print_users(){
     struct user *temp = user_head;
-    while(temp != NULL) {
-        printf("%d\n", temp->uid);
+    printf("Users = ");
+    while(temp->uid != user_Sentinel->uid) {
+        printf("%d", temp->uid);
         temp = temp->next;
+        if(temp->uid!= user_Sentinel->uid)
+            printf(",");
     }
     printf("\n");
 }
 
 
+/*print new movies*/
+void print_new_movies(){
+    struct new_movie *temp = new_movies_head;
+    while(temp != NULL) {
+        printf("MID:%u CAT:%d YEAR:%u", temp->info.mid, temp->category, temp->info.year);
+        temp = temp->next;
+        if(temp!=NULL)
+            printf(",");
+    }
+    printf("\n");
+}
 int register_user(int uid){
     /*check if there is a user with the same uid*/
+    struct user *NewUser = (struct user*) malloc(sizeof(struct user));
+    NewUser->uid = uid;
+    NewUser->suggestedHead = NULL;
+    NewUser->suggestedTail = NULL;
+    NewUser->watchHistory = NULL;
+    if (user_head == NULL){
+        user_head = NewUser;
+        user_Sentinel=(struct user*) malloc(sizeof(struct user));
+        user_Sentinel->uid = -1;
+        NewUser->next = user_Sentinel;
+        return 0;
+    }
     struct user *temp = user_head;
-    struct user *last = NULL;
-    while(temp != NULL) {
+    struct user *prev = NULL;
+    while(temp->uid != user_Sentinel->uid) {
         if (temp->uid == uid) {
             return -1;
         }
-        last = temp;
+        prev = temp;
         temp = temp->next;
     }
     /*create new user*/
-    struct user *new_user = (struct user*) malloc(sizeof(struct user));
-    new_user->uid = uid;
-    new_user->suggestedHead = NULL;
-    new_user->suggestedTail = NULL;
-    new_user->watchHistory = NULL;
-    new_user->next = NULL;
-    if(user_head == NULL){
-        user_head = new_user;
-    }
-    else{
-        last->next = new_user;
-    }
+    NewUser->next = user_Sentinel;
+    prev->next = NewUser;
 
-    return 0;
+
+
 }
+
 void unregister_user(int uid){
     /*check if there is a user with the same uid*/
     struct user *temp = user_head;
@@ -56,14 +78,15 @@ void unregister_user(int uid){
     if(temp == NULL){
         return;
     }
-    /*free suggested movies*/
+    /*free suggested movies
     struct suggested_movie *temp_suggested = temp->suggestedHead;
     while(temp_suggested != NULL){
         struct suggested_movie *temp_suggested_next = temp_suggested->next;
         free(temp_suggested);
         temp_suggested = temp_suggested_next;
-    }
-
+    }*/
+    temp->suggestedHead = NULL;
+    temp->suggestedTail = NULL;
     /*free watch history*/
     struct movie *temp_movie = temp->watchHistory;
     while(temp_movie != NULL){
@@ -79,9 +102,8 @@ void unregister_user(int uid){
     else{
         prev->next = temp->next;
     }
-
-    /*free user*/
-    free(temp);
+    /*free user
+    free(temp);*/
 
 
 }
@@ -111,16 +133,123 @@ int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
     NewMovie->next = temp;
 
     return 0;
+}
+void Insert(struct new_movie *pMovie) {
+    struct movie *Newnode = (struct movie*) malloc(sizeof(struct movie));
+    Newnode->info.mid = pMovie->info.mid;
+    Newnode->info.year = pMovie->info.year;
+    Newnode->next = NULL;
+    if (category_table[pMovie->category] == NULL){
+        category_table[pMovie->category] =  Newnode;
+        return;
+    }
+    struct movie *temp = category_table[pMovie->category];
+    struct movie *last = NULL;
+    while (temp != NULL){
+        last = temp;
+        temp = temp->next;
+    }
+    last->next = Newnode;
 
 }
 
-/*print new movies*/
-void print_new_movies(){
+void distribute_new_movies(void){
     struct new_movie *temp = new_movies_head;
-    while(temp != NULL) {
-        printf("%u %d %u\n", temp->info.mid, temp->category, temp->info.year);
+    struct new_movie *prev = NULL;
+    while (temp != NULL){
+        Insert(temp);
+        prev = temp;
+        temp = temp->next;
+        free(prev);
+    }
+    new_movies_head = NULL;
+}
+void print_movies(void){
+
+    char *category_names[6] = {"Horror","Sci-fi","Drama","Romance","Documentary","Comedy"};
+    struct movie *temp;
+    int i ;
+    for ( i = 0 ; i < 6 ; i++){
+        temp = category_table[i];
+        printf("%s: ",category_names[i]);
+        while(temp != NULL){
+            printf("<%u,%u>",temp->info.mid,temp->info.year);
+            temp = temp->next;
+            if(temp != NULL){
+                printf(" , ");
+            }
+        }
+        printf("\n");
+    }
+    printf("DONE\n");
+}
+void Insert_W(struct user *pUser,struct movie *pMovie) {
+    struct movie *Newnode = (struct movie*) malloc(sizeof(struct movie));
+    Newnode->info.mid = pMovie->info.mid;
+    Newnode->info.year = pMovie->info.year;
+    Newnode->next = NULL;
+    if (pUser->watchHistory == NULL){
+        pUser->watchHistory =  Newnode;
+        return;
+    }
+    struct movie *temp = pUser->watchHistory;
+    struct movie *last = NULL;
+    while (temp != NULL){
+        last = temp;
         temp = temp->next;
     }
+    last->next = Newnode;
+
+}
+
+int watch_movie(int uid, unsigned mid){
+    struct user *temp_user = user_head;
+    while(temp_user != NULL) {
+        if (temp_user->uid == uid) {
+            break;
+        }
+        temp_user = temp_user->next;
+    }
+    if(temp_user == NULL){
+        return -1;
+    }
+    int i ;
+    int flag = 0;
+    struct movie *temp_movie;
+    for(i = 0 ; i < 6 ; i++){
+        temp_movie = category_table[i];
+        while(temp_movie != NULL){
+            if(temp_movie->info.mid == mid){
+                flag = 1;
+                break;
+            }
+            temp_movie = temp_movie->next;
+        }
+        if(flag == 1){
+            break;
+        }
+    }
+    if(flag == 0){
+        return -1;
+    }
+    Insert_W(temp_user,temp_movie);
+    /*print ALL THE USERS with their watch history*/
+    struct user *temp = user_head;
+    while(temp->uid != user_Sentinel->uid){
+        printf("User %d: ",temp->uid);
+        struct movie *temp_movie = temp->watchHistory;
+        while(temp_movie != NULL){
+            printf("<%u,%u>",temp_movie->info.mid,temp_movie->info.year);
+            temp_movie = temp_movie->next;
+            if(temp_movie != NULL){
+                printf(" , ");
+            }
+        }
+        printf("\n");
+        temp = temp->next;
+    }
+    printf("DONE\n");
     printf("\n");
+    return 0;
 }
 

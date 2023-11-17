@@ -16,49 +16,52 @@
 
 #define __CS240_STREAMING_SERVICE_H__
 extern struct user *user_head;
+extern struct user *user_Sentinel;
 extern struct new_movie* new_movies_head;
+extern struct movie *category_table[6];
+
 typedef enum {
-	HORROR,
-	SCIFI,
-	DRAMA,
-	ROMANCE,
-	DOCUMENTARY,
-	COMEDY
+    HORROR,
+    SCIFI,
+    DRAMA,
+    ROMANCE,
+    DOCUMENTARY,
+    COMEDY
 } movieCategory_t;
 
 struct movie_info {
-	unsigned mid;
-	unsigned year;
+    unsigned mid;
+    unsigned year;
 };
 
 struct movie {
-	struct movie_info info;
-	struct movie *next;
+    struct movie_info info;
+    struct movie *next;
 };
 
 struct new_movie {
-	struct movie_info info;
-	movieCategory_t category;
-	struct new_movie *next;
+    struct movie_info info;
+    movieCategory_t category;
+    struct new_movie *next;
 };
 
 struct suggested_movie {
-	struct movie_info info;
-	struct suggested_movie *prev;
-	struct suggested_movie *next;
+    struct movie_info info;
+    struct suggested_movie *prev;
+    struct suggested_movie *next;
 };
 
 struct user {
-	int uid;
-	struct suggested_movie *suggestedHead;
-	struct suggested_movie *suggestedTail;
-	struct movie *watchHistory;
-	struct user *next;
+    int uid;
+    struct suggested_movie *suggestedHead;
+    struct suggested_movie *suggestedTail;
+    struct movie *watchHistory;
+    struct user *next;
 };
 
 /*
  * Register User - Event R
- * 
+ *
  * Adds user with ID uid to
  * users list, as long as no
  * other user with the same uid
@@ -155,7 +158,7 @@ int suggest_movies(int uid);
  * Returns 0 on success, -1 on failure
  */
 int filtered_movie_search(int uid, movieCategory_t category1,
-		movieCategory_t category2, unsigned year);
+                          movieCategory_t category2, unsigned year);
 
 /*
  * Take off movie - Event T
