@@ -184,6 +184,7 @@ void print_movies(void);
  * users list
  */
 void print_users(void);
+void print_U(void);
 void print_new_movies();
 void print_users_history();
 void print_user_history(int uid);

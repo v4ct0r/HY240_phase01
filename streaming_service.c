@@ -11,6 +11,34 @@ struct movie *category_table[6];
 
 void print_users(){
     struct user *temp = user_head;
+    struct suggested_movie *temp_sug ;
+    struct movie *temp_hist ;
+    int i ;
+    printf("Users:\n");
+    while(temp->uid != user_Sentinel->uid) {
+        printf("   %d :\n", temp->uid);
+        printf("    Suggested: " );
+        temp_sug=temp->suggestedHead ;
+        i=1;
+        while(temp_sug!=NULL){
+            printf("<%d,%d>",temp_sug->info.mid,i);
+            temp_sug=temp_sug->next;
+        }
+        temp_hist=temp->watchHistory;
+        i=1;
+        printf("\n    Watch History:");
+        while (temp_hist!=NULL){
+            printf("<%d,%d>",temp_hist->info.mid,i);
+            i++ ;
+            temp_hist=temp_hist->next ;
+        }
+        printf("\n");
+        temp = temp->next;
+    }
+    printf("DONE\n");
+}
+void print_U(){
+    struct user *temp = user_head;
     printf("Users = ");
     while(temp->uid != user_Sentinel->uid) {
         printf("%d", temp->uid);
@@ -45,6 +73,7 @@ int register_user(int uid){
         user_Sentinel=(struct user*) malloc(sizeof(struct user));
         user_Sentinel->uid = -1;
         NewUser->next = user_Sentinel;
+        print_U();
         return 0;
     }
     struct user *temp = user_head;
@@ -59,9 +88,7 @@ int register_user(int uid){
     /*create new user*/
     NewUser->next = user_Sentinel;
     prev->next = NewUser;
-
-
-
+    print_U() ;
 }
 
 void unregister_user(int uid){
@@ -170,11 +197,14 @@ void print_movies(void){
     char *category_names[6] = {"Horror","Sci-fi","Drama","Romance","Documentary","Comedy"};
     struct movie *temp;
     int i ;
+    int counter ;
     for ( i = 0 ; i < 6 ; i++){
         temp = category_table[i];
         printf("%s: ",category_names[i]);
+        counter = 1 ;
         while(temp != NULL){
-            printf("<%u,%u>",temp->info.mid,temp->info.year);
+            printf("<%u,%d>",temp->info.mid,counter);
+            counter++;
             temp = temp->next;
             if(temp != NULL){
                 printf(" , ");
@@ -237,7 +267,7 @@ void print_user_history(int uid){
     struct movie *temp_movie = temp->watchHistory;
     printf("User %d Watch History: ",temp->uid);
     while (temp_movie!= NULL){
-        printf("<%u,%u>",temp_movie->info.mid,temp_movie->info.year);
+        printf("<%u>",temp_movie->info.mid);
         temp_movie = temp_movie->next;
         if(temp_movie != NULL){
             printf(" , ");
