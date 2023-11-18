@@ -120,6 +120,8 @@ int main(int argc, char *argv[])
                     break;
                 }
                 register_user(uid);
+                /*printf("R <%d>\n   ",uid);
+                print_U();*/
                 break;
             case 'U':
                 if (sscanf(trimmed_line, "U %d", &uid) != 1) {
@@ -127,6 +129,8 @@ int main(int argc, char *argv[])
                     break;
                 }
                 unregister_user(uid);
+                /*printf("U <%d>\n   ",uid);
+                print_U();*/
                 break;
             case 'A':
                 if (sscanf(trimmed_line, "A %u %d %u", &mid, &category1,
@@ -135,21 +139,24 @@ int main(int argc, char *argv[])
                     break;
                 }
                 add_new_movie(mid, category1, year);
-                /*print_new_movies();*/
+                /*printf("A<%u><%d><%u>\n  ",mid,category1,year);
+                print_A();*/
                 break;
 
             case 'D':
                 distribute_new_movies();
+                /*printf("D\nCategorized Movies:\n");
+                print_movies();*/
                 break;
-                 case 'W':
-                     if (sscanf(trimmed_line, "W %d %u", &uid, &mid) != 2) {
-                         fprintf(stderr, "Event W parsing error\n");
-                         break;
-                     }
-                     printf("\n");
-                     watch_movie(uid, mid);
-                     /*print_users_history();*/
-                print_user_history(uid);
+            case 'W':
+                if (sscanf(trimmed_line, "W %d %u", &uid, &mid) != 2) {
+                    fprintf(stderr, "Event W parsing error\n");
+                    break;
+                }
+               /* printf("\n");*/
+                watch_movie(uid, mid);
+                print_users_history();
+               /* print_user_history(uid);*/
                 break;
                 /* case 'S':
                      if (sscanf(trimmed_line, "S %d", &uid) != 1) {
@@ -174,9 +181,11 @@ int main(int argc, char *argv[])
                      take_off_movie(mid);
                      break;
                  */case 'M':
+                printf("M\nCategorized Movies:\n");
                 print_movies();
                 break;
             case 'P':
+                printf("P \n ");
                 print_users();
                 break;
             default:
