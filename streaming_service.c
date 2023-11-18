@@ -132,7 +132,6 @@ void unregister_user(int uid){
     /*free user
     free(temp);*/
 
-
 }
 
 int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
