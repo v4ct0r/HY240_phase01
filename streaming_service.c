@@ -512,16 +512,16 @@ int filtered_movie_search(int uid, movieCategory_t category1,movieCategory_t cat
     }
     if(temp_user->suggestedHead == NULL){
         temp_user->suggestedHead = mergedHead;
-        /*psaxnw to telos tis listas na balw to tail*/
-        struct suggested_movie *temp_sug = temp_user->suggestedHead;
-        while(temp_sug->next != NULL){
-            temp_sug = temp_sug->next;
-        }
-        temp_user->suggestedTail = temp_sug;
     }
     else{
         temp_user->suggestedTail->next = mergedHead;
         mergedHead->prev = temp_user->suggestedTail;
     }
+    /*psaxnw to telos tis listas na balw to tail*/
+    struct suggested_movie *temp_sug = temp_user->suggestedHead;
+    while(temp_sug->next != NULL){
+        temp_sug = temp_sug->next;
+    }
+    temp_user->suggestedTail = temp_sug;
     return 0;
 }
