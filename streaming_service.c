@@ -7,8 +7,6 @@ struct user *user_Sentinel;
 struct  new_movie *new_movies_head;
 struct movie *category_table[6];
 
-
-
 void print_users(){
     struct user *temp = user_head;
     struct suggested_movie *temp_sug ;
@@ -63,8 +61,33 @@ void print_A(){
     }
     printf("\nDONE\n");
 }
+void print_F(int uid, movieCategory_t category1,movieCategory_t category2, unsigned year){
+    struct user *temp = user_head;
+    while(temp->uid != user_Sentinel->uid){
+        if(temp->uid == uid){
+            break;
+        }
+        temp = temp->next;
+    }
+    if(temp->uid == user_Sentinel->uid){
+        return;
+    }
+    printf("F<%d><%d><%d><%u>\n",uid,category1,category2,year);
+    printf("  Suggested: ");
+    struct suggested_movie *temp_sug = temp->suggestedHead;
+    int i = 1 ;
+    while(temp_sug != NULL){
+        printf("<%d,%d>",temp_sug->info.mid,i);
+        i++;
+        temp_sug = temp_sug->next;
+        if(temp_sug != NULL){
+            printf(" , ");
+        }
+    }
+    printf("\nDONE\n");
+}
+
 int register_user(int uid){
-    /*check if there is a user with the same uid*/
     struct user *NewUser = (struct user*) malloc(sizeof(struct user));
     NewUser->uid = uid;
     NewUser->suggestedHead = NULL;
@@ -79,6 +102,7 @@ int register_user(int uid){
     }
     struct user *temp = user_head;
     struct user *prev = NULL;
+    /*check if there is a user with the same uid*/
     while(temp->uid != user_Sentinel->uid) {
         if (temp->uid == uid) {
             return -1;
@@ -89,6 +113,7 @@ int register_user(int uid){
     /*create new user*/
     NewUser->next = user_Sentinel;
     prev->next = NewUser;
+    return 0;
 }
 
 void unregister_user(int uid){
@@ -105,22 +130,10 @@ void unregister_user(int uid){
     if(temp == NULL){
         return;
     }
-    /*free suggested movies
-    struct suggested_movie *temp_suggested = temp->suggestedHead;
-    while(temp_suggested != NULL){
-        struct suggested_movie *temp_suggested_next = temp_suggested->next;
-        free(temp_suggested);
-        temp_suggested = temp_suggested_next;
-    }*/
+    /*free suggested list*/
     temp->suggestedHead = NULL;
     temp->suggestedTail = NULL;
-    /*free watch history
-    struct movie *temp_movie = temp->watchHistory;
-    while(temp_movie != NULL){
-        struct movie *temp_movie_next = temp_movie->next;
-        free(temp_movie);
-        temp_movie = temp_movie_next;
-    }*/
+    /*free watch history*/
     temp->watchHistory = NULL;
 
     /*remove user from list*/
@@ -130,9 +143,7 @@ void unregister_user(int uid){
     else{
         prev->next = temp->next;
     }
-    /*free user
-    free(temp);*/
-
+    /*free(temp);*/
 }
 
 int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
@@ -358,8 +369,8 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
                     NewTail = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
                     tempTail = NewTail;
                     tempTail->next = NULL;
-                } else {/*kanei insert sthn arxh dhladh to prwto stoixeio pou mpenei tha einai to teleutaio kai ta epomena tha mpenoun sto prev tou*/
-                    /*handle oi pointers*/
+                } else {/*kanei insert sthn arxh dhladh to prwto stoixeio pou mpenei tha einai to teleutaio kai ta epomena tha benoun sto prev tou*/
+                    /*handle tous pointers*/
                     tempTail->prev = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
                     tempTail->prev->next = tempTail; /*bazo to next tou prohgoumenou tha deixnei sto tempTail*/
                     tempTail = tempTail->prev;
@@ -378,7 +389,6 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
         if (tempHead != NULL && tempTail != NULL) {
             tempHead->next = tempTail; /*connect the two lists*/
             tempTail->prev = tempHead;
-            NewTail->next = NULL; /*to teleutaio tis list tha deixnei se NULL*/
             temp_user->suggestedHead = NewHead;
             temp_user->suggestedTail = NewTail;
         } else if (tempHead != NULL && tempTail == NULL) {
@@ -390,4 +400,128 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
         2. An bei parapano tha dimiourgithei toulachiston ena NewTail (first if).
         3. Na den bei kamia, ola paramenoun NULL. */
     }
+}
+struct suggested_movie* createList(movieCategory_t category, unsigned year) {
+    /*ftiaxnei mia lista me ta movies pou exoun megalyterh h idia th xronia*/
+    struct suggested_movie *temp_sug =  NULL;
+    struct suggested_movie *Head_sug = NULL;
+
+    struct movie *temp_movie = category_table[category];
+    while(temp_movie != NULL){
+        if(temp_movie->info.year >= year){/*an einai idia h megaluterh h xronia Create node*/
+            struct suggested_movie *Newnode = (struct suggested_movie*) malloc(sizeof(struct suggested_movie));
+            Newnode->info = temp_movie->info;
+            Newnode->next = NULL;
+            Newnode->prev = temp_sug;
+            /*Insert*/
+            if(temp_sug == NULL){
+                temp_sug = Newnode;
+                Head_sug = temp_sug;
+            }
+            else{
+                temp_sug->next = Newnode;
+                temp_sug = temp_sug->next;
+            }
+        }
+        temp_movie = temp_movie->next;
+    }
+    return Head_sug;
+}
+
+struct suggested_movie* mergeLists(struct suggested_movie* head1, struct suggested_movie* head2) {
+    struct suggested_movie* result_head = NULL;
+    struct suggested_movie* result = NULL;
+
+    if(head1 == NULL){/*an to prwto einai keno*/
+        return head2;
+    }
+    else if(head2 == NULL){/*an to deutero einai keno*/
+        return head1;
+    }
+    while (1){
+        if(head1!=NULL && head2!=NULL && head1->info.mid <= head2->info.mid){ /*an to mid tou prwtou einai mikrotero h iso me to mid tou deuterou*/
+            if(result == NULL){
+                result = head1;
+                result_head = result;
+                head1 = head1->next;
+                result->next = NULL;
+                result->prev = NULL;
+            }
+            else{
+                result->next = head1;
+                head1->prev = result;
+                head1 = head1->next;
+                result = result->next;
+                result->next = NULL;
+            }
+        }
+        else if(head1!=NULL && head2!=NULL && head1->info.mid > head2->info.mid){ /*an to mid tou prwtou einai megalutero apo to mid tou deuterou*/
+            if(result == NULL){
+                result = head2;
+                result_head = result;
+                head2 = head2->next;
+                result->next = NULL;
+                result->prev = NULL;
+            }
+            else{
+                result->next = head2;
+                head2->prev = result;
+                head2 = head2->next;
+                result = result->next;
+                result->next = NULL;
+            }
+        }else if(head1==NULL && head2!=NULL){ /*an teleiwsoun ta nodes tou prwtou list*/
+            result->next = head2;
+            head2->prev = result;
+            head2 = head2->next;
+            result = result->next;
+            result->next = NULL;
+        } else if(head1!=NULL && head2==NULL){/*an teleiwsoun ta nodes tou deuterou list*/
+            result->next = head1;
+            head1->prev = result;
+            head1 = head1->next;
+            result = result->next;
+            result->next = NULL;
+        }
+        else{/*an teleiwsoun kai ta 2 lists*/
+            return result_head;
+        }
+    }
+}
+
+int filtered_movie_search(int uid, movieCategory_t category1,movieCategory_t category2, unsigned year){
+    struct user *temp = user_head;
+    struct user *temp_user = NULL;
+    while (temp->uid != user_Sentinel->uid) {/*psaxnw ton user*/
+        if(temp->uid == uid) {
+            temp_user = temp;
+            break;
+        }
+        temp = temp->next;
+    }
+    if(temp_user == NULL){
+        return -1;
+    }
+
+    struct suggested_movie *Head_sug1 = createList(category1, year);
+    struct suggested_movie *Head_sug2 = createList(category2, year);
+
+    struct suggested_movie *mergedHead = mergeLists(Head_sug1, Head_sug2);
+    if (mergedHead == NULL){
+        return 0;
+    }
+    if(temp_user->suggestedHead == NULL){
+        temp_user->suggestedHead = mergedHead;
+        /*psaxnw to telos tis listas na balw to tail*/
+        struct suggested_movie *temp_sug = temp_user->suggestedHead;
+        while(temp_sug->next != NULL){
+            temp_sug = temp_sug->next;
+        }
+        temp_user->suggestedTail = temp_sug;
+    }
+    else{
+        temp_user->suggestedTail->next = mergedHead;
+        mergedHead->prev = temp_user->suggestedTail;
+    }
+    return 0;
 }

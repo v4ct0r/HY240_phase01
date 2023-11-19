@@ -186,6 +186,9 @@ void print_movies(void);
 void print_users(void);
 void print_U(void);
 void print_A();
+void print_S(int uid);
+void print_F(int uid, movieCategory_t category1,
+             movieCategory_t category2, unsigned year);
 void print_users_history();
 void print_user_history(int uid);
 

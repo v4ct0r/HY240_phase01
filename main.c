@@ -164,16 +164,18 @@ int main(int argc, char *argv[])
                     break;
                 }
                 suggest_movies(uid);
+                /*print_S(uid);*/
                 break;
-                /* case 'F':
-                     if (sscanf(trimmed_line, "F %d %d %d %u", &uid, &category1,
-                                 &category2, &year) != 4) {
-                         fprintf(stderr, "Event F parsing error\n");
-                         break;
-                     }
-                     filtered_movie_search(uid, category1, category2, year);
-                     break;
-                 case 'T':
+            case 'F':
+                if (sscanf(trimmed_line, "F %d %d %d %u", &uid, &category1,
+                           &category2, &year) != 4) {
+                    fprintf(stderr, "Event F parsing error\n");
+                    break;
+                }
+                filtered_movie_search(uid, category1, category2, year);
+                /*print_F(uid,category1,category2,year);*/
+                break;
+                /* case 'T':
                      if (sscanf(trimmed_line, "T %u", &mid) != 1) {
                          fprintf(stderr, "Event T parsing error\n");
                          break;
