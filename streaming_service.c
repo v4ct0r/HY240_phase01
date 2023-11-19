@@ -222,7 +222,8 @@ void Insert_W(struct user *pUser ,struct movie *pMovie) {
     Newnode->next = pUser->watchHistory;
     pUser->watchHistory = Newnode;
 }
-void print_users_history(){
+void print_users_history(int uid, unsigned mid){
+    printf("W<%d><%u>\n",uid,mid);
     struct user *temp = user_head;
     int i ;
     while(temp->uid != user_Sentinel->uid){
