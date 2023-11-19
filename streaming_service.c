@@ -241,7 +241,6 @@ void print_users_history(){
         temp = temp->next;
     }
     printf("DONE\n");
-    printf("\n");
 }
 
 void print_user_history(int uid){
@@ -255,6 +254,7 @@ void print_user_history(int uid){
     if(temp->uid == user_Sentinel->uid){
         return;
     }
+    printf("W<%d><%u>\n",uid ,temp->watchHistory->info.mid);
     struct movie *temp_movie = temp->watchHistory;
     printf("  User %d Watch History: ",temp->uid);
     while (temp_movie!= NULL){
@@ -279,7 +279,6 @@ int watch_movie(int uid, unsigned mid){
     if(temp_user->uid == user_Sentinel->uid){
         return -1;
     }
-    printf("W<%d><%u>\n",uid ,mid);
     int i ;
     int flag = 0;
     struct movie *temp_movie;
@@ -302,6 +301,32 @@ int watch_movie(int uid, unsigned mid){
     Insert_W(temp_user,temp_movie);
     return 0;
 }
+void print_S(int uid){
+    struct user *temp = user_head;
+    while(temp->uid != user_Sentinel->uid){
+        if(temp->uid == uid){
+            break;
+        }
+        temp = temp->next;
+    }
+    if(temp->uid == user_Sentinel->uid){
+        return;
+    }
+    printf("S<%d>\n",uid);
+    printf("  Suggested: ");
+    struct suggested_movie *temp_sug = temp->suggestedHead;
+    int i = 1 ;
+    while(temp_sug != NULL){
+        printf("<%d,%d>",temp_sug->info.mid,i);
+        i++;
+        temp_sug = temp_sug->next;
+        if(temp_sug != NULL){
+            printf(" , ");
+        }
+    }
+    printf("\nDONE\n");
+}
+
 int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se temp structs kai meta ta bazw sto user */
     struct user *temp = user_head;
     struct user *temp_user = NULL;
@@ -365,4 +390,3 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
         3. Na den bei kamia, ola paramenoun NULL. */
     }
 }
-
