@@ -155,17 +155,17 @@ int main(int argc, char *argv[])
                 }
                 /* printf("\n");*/
                 watch_movie(uid, mid);
-                /* print_users_history();
-                 print_user_history(uid);*/
+                print_users_history();
+                /* print_user_history(uid);*/
                 break;
-                /* case 'S':
-                     if (sscanf(trimmed_line, "S %d", &uid) != 1) {
-                         fprintf(stderr, "Event S parsing error\n");
-                         break;
-                     }
-                     suggest_movies(uid);
-                     break;
-                 case 'F':
+            case 'S':
+                if (sscanf(trimmed_line, "S %d", &uid) != 1) {
+                    fprintf(stderr, "Event S parsing error\n");
+                    break;
+                }
+                suggest_movies(uid);
+                break;
+                /* case 'F':
                      if (sscanf(trimmed_line, "F %d %d %d %u", &uid, &category1,
                                  &category2, &year) != 4) {
                          fprintf(stderr, "Event F parsing error\n");

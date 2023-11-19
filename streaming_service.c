@@ -20,8 +20,9 @@ void print_users(){
         printf("    Suggested: " );
         temp_sug=temp->suggestedHead ;
         i=1;
-        while(temp_sug!=NULL){
+        while(temp_sug!=NULL )  {
             printf("<%d,%d>",temp_sug->info.mid,i);
+            i++;
             temp_sug=temp_sug->next;
         }
         temp_hist=temp->watchHistory;
@@ -217,18 +218,9 @@ void Insert_W(struct user *pUser ,struct movie *pMovie) {
     struct movie *Newnode = (struct movie*) malloc(sizeof(struct movie));
     Newnode->info.mid = pMovie->info.mid;
     Newnode->info.year = pMovie->info.year;
-    Newnode->next = NULL;
-    if (pUser->watchHistory == NULL){
-        pUser->watchHistory =  Newnode;
-        return;
-    }
-    struct movie *temp = pUser->watchHistory;
-    struct movie *last = NULL;
-    while (temp != NULL){
-        last = temp;
-        temp = temp->next;
-    }
-    last->next = Newnode;
+
+    Newnode->next = pUser->watchHistory;
+    pUser->watchHistory = Newnode;
 }
 void print_users_history(){
     struct user *temp = user_head;
@@ -310,3 +302,66 @@ int watch_movie(int uid, unsigned mid){
     Insert_W(temp_user,temp_movie);
     return 0;
 }
+int suggest_movies(int uid) {
+    struct user *temp = user_head;
+    struct user *temp_user = NULL;
+    struct suggested_movie *NewHead = NULL;
+    struct suggested_movie *tempHead = NULL;
+    struct suggested_movie *NewTail = NULL;
+    struct suggested_movie *tempTail = NULL;
+    struct movie *temp_hist;
+
+    int i = 0;
+    while (temp->uid != user_Sentinel->uid) {
+        temp_hist = temp->watchHistory;
+        if (temp->uid != uid && temp_hist != NULL) {
+            if (i % 2 == 0) {
+                if (NewHead == NULL) {
+                    NewHead = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
+                    tempHead = NewHead;
+                    tempHead->prev = NULL;
+                } else {
+                    tempHead->next = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
+                    tempHead->next->prev = tempHead;
+                    tempHead = tempHead->next;
+                }
+                tempHead->info.mid = temp_hist->info.mid;
+                temp->watchHistory = temp->watchHistory->next;
+            } else {
+                if (NewTail == NULL) {
+                    NewTail = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
+                    tempTail = NewTail;
+                    tempTail->next = NULL;
+                } else {
+                    tempTail->prev = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
+                    tempTail->prev->next = tempTail;
+                    tempTail = tempTail->prev;
+                }
+                tempTail->info.mid = temp_hist->info.mid;
+                temp->watchHistory = temp->watchHistory->next;
+            }
+            i++;
+        } else if (temp->uid == uid) {
+            temp_user = temp;
+        }
+        temp = temp->next;
+    }
+    if (temp_user != user_Sentinel) {
+        if (tempHead != NULL && tempTail != NULL) {
+            tempHead->next = tempTail; /*connect the two lists*/
+            tempTail->prev = tempHead;
+            NewTail->next = NULL;
+            temp_user->suggestedHead = NewHead;
+            temp_user->suggestedTail = NewTail;
+        } else if (tempHead != NULL && tempTail == NULL) {
+            tempHead->next = NULL;
+            temp_user->suggestedHead = NewHead;
+        }
+        /* Yparxoun mono treis periptoseis:
+        1. Na bei stin 'if' estw mia fora kai tha dimiourgithei toulachiston ena NewHead.
+        2. An bei parapano tha dimiourgithei toulachiston ena NewTail (proti if).
+        3. Na den bei kamia, ola paramenoun NULL. */
+
+    }
+}
+
