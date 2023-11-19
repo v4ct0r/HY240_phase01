@@ -155,8 +155,8 @@ int main(int argc, char *argv[])
                 }
                 /* printf("\n");*/
                 watch_movie(uid, mid);
-                print_users_history();
-                 /* print_user_history(uid);*/
+                /*print_users_history();
+                  print_user_history(uid);*/
                 break;
             case 'S':
                 if (sscanf(trimmed_line, "S %d", &uid) != 1) {
