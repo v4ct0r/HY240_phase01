@@ -214,7 +214,7 @@ void print_movies(void){
 }
 
 void Insert_W(struct user *pUser ,struct movie *pMovie) {
-
+    /*Insert in the beginning because it's a stack*/
     struct movie *Newnode = (struct movie*) malloc(sizeof(struct movie));
     Newnode->info.mid = pMovie->info.mid;
     Newnode->info.year = pMovie->info.year;
@@ -302,7 +302,7 @@ int watch_movie(int uid, unsigned mid){
     Insert_W(temp_user,temp_movie);
     return 0;
 }
-int suggest_movies(int uid) {
+int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se temp structs kai meta ta bazw sto user */
     struct user *temp = user_head;
     struct user *temp_user = NULL;
     struct suggested_movie *NewHead = NULL;
@@ -332,11 +332,13 @@ int suggest_movies(int uid) {
                     NewTail = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
                     tempTail = NewTail;
                     tempTail->next = NULL;
-                } else {
+                } else {/*kanei insert sthn arxh dhladh to prwto stoixeio pou mpenei tha einai to teleutaio kai ta epomena tha mpenoun sto prev tou*/
+                    /*handle oi pointers*/
                     tempTail->prev = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
-                    tempTail->prev->next = tempTail;
+                    tempTail->prev->next = tempTail; /*bazo to next tou prohgoumenou tha deixnei sto tempTail*/
                     tempTail = tempTail->prev;
                 }
+                /*insert*/
                 tempTail->info.mid = temp_hist->info.mid;
                 temp->watchHistory = temp->watchHistory->next;
             }
@@ -350,7 +352,7 @@ int suggest_movies(int uid) {
         if (tempHead != NULL && tempTail != NULL) {
             tempHead->next = tempTail; /*connect the two lists*/
             tempTail->prev = tempHead;
-            NewTail->next = NULL;
+            NewTail->next = NULL; /*to teleutaio tis list tha deixnei se NULL*/
             temp_user->suggestedHead = NewHead;
             temp_user->suggestedTail = NewTail;
         } else if (tempHead != NULL && tempTail == NULL) {
@@ -359,9 +361,8 @@ int suggest_movies(int uid) {
         }
         /* Yparxoun mono treis periptoseis:
         1. Na bei stin 'if' estw mia fora kai tha dimiourgithei toulachiston ena NewHead.
-        2. An bei parapano tha dimiourgithei toulachiston ena NewTail (proti if).
+        2. An bei parapano tha dimiourgithei toulachiston ena NewTail (first if).
         3. Na den bei kamia, ola paramenoun NULL. */
-
     }
 }
 
