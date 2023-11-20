@@ -155,7 +155,6 @@ void unregister_user(int uid){
     else{
         prev->next = temp->next;  /*bazw to next tou prohgoumenou na deixnei sto next tou user pou thelw na diagrapsw*/
     }
-    /*free(temp);*/
 }
 
 int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
@@ -245,27 +244,6 @@ void Insert_W(struct user *pUser ,struct movie *pMovie) {
 
     Newnode->next = pUser->watchHistory;
     pUser->watchHistory = Newnode;
-}
-void print_users_history(int uid, unsigned mid){
-    printf("W<uid:%d><%u>\n",uid,mid);
-    struct user *temp = user_head;
-    int i ;
-    while(temp->uid != user_Sentinel->uid){
-        printf(" User %d Watch History: ",temp->uid);
-        struct movie *temp_movie = temp->watchHistory;
-        i= 1 ;
-        while(temp_movie != NULL){
-            printf("mid:%u,%d",temp_movie->info.mid,i);
-            i++ ;
-            temp_movie = temp_movie->next;
-            if(temp_movie != NULL){
-                printf(" , ");
-            }
-        }
-        printf("\n");
-        temp = temp->next;
-    }
-    printf("DONE\n");
 }
 
 void print_user_history(int uid){
@@ -370,7 +348,6 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
     if (temp->uid == user_Sentinel->uid) {
         return -1;
     }
-
     temp = user_head;
     int i = 0;
     while (temp->uid != user_Sentinel->uid) {
@@ -539,12 +516,12 @@ int filtered_movie_search(int uid, movieCategory_t category1,movieCategory_t cat
     if (mergedHead == NULL){
         return 0;
     }
-    if(temp_user->suggestedHead == NULL){
+    if(temp_user->suggestedHead == NULL){/*an einai keno to suggested tou user*/
         temp_user->suggestedHead = mergedHead;
     }
     else{
-        temp_user->suggestedTail->next = mergedHead;
-        mergedHead->prev = temp_user->suggestedTail;
+        temp_user->suggestedTail->next = mergedHead;/*bazei to next tou teleutaiou na deixnei sto mergedHead*/
+        mergedHead->prev = temp_user->suggestedTail; /*bazei to prev tou mergedHead na deixnei sto prohgoumeno tail*/
     }
     /*psaxnw to telos tis listas na balw to tail*/
     struct suggested_movie *temp_sug = temp_user->suggestedHead;
@@ -627,9 +604,6 @@ void take_off_movie(unsigned mid){
             }
             printf("\n");
         }
-
     }
     printf("DONE\n");
-
-
 }
