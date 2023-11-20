@@ -110,7 +110,7 @@ int register_user(int uid){
         prev = temp;
         temp = temp->next;
     }
-    /*create new user*/
+    /*place the new user before the sentinel*/
     NewUser->next = user_Sentinel;
     prev->next = NewUser;
     return 0;
@@ -135,7 +135,6 @@ void unregister_user(int uid){
     temp->suggestedTail = NULL;
     /*free watch history*/
     temp->watchHistory = NULL;
-
     /*remove user from list*/
     if(prev == NULL){
         user_head = temp->next;
@@ -347,7 +346,17 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
     struct suggested_movie *NewTail = NULL;
     struct suggested_movie *tempTail = NULL;
     struct movie *temp_hist;
-
+    /*check if the uid is in the list of users*/
+    while (temp->uid != user_Sentinel->uid) {
+        if (temp->uid == uid) {
+            break;
+        }
+        temp = temp->next;
+    }
+    if (temp->uid == user_Sentinel->uid) {
+        return -1;
+    }
+    temp = user_head;
     int i = 0;
     while (temp->uid != user_Sentinel->uid) {
         temp_hist = temp->watchHistory;
