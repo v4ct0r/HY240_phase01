@@ -101,7 +101,7 @@ int register_user(int uid){
         return 0;
     }
     struct user *temp = user_head;
-    struct user *prev = NULL;
+    struct user *prev = user_head;
     /*check if there is a user with the same uid*/
     while(temp->uid != user_Sentinel->uid) {
         if (temp->uid == uid) {
@@ -120,14 +120,14 @@ void unregister_user(int uid){
     /*check if there is a user with the same uid*/
     struct user *temp = user_head;
     struct user *prev = NULL;
-    while(temp != NULL) {
+    while(temp->uid != user_Sentinel->uid ) {
         if (temp->uid == uid) {
             break;
         }
         prev = temp;
         temp = temp->next;
     }
-    if(temp == NULL){
+    if(temp->uid == user_Sentinel->uid){
         return;
     }
     /*free suggested list*/
@@ -136,11 +136,16 @@ void unregister_user(int uid){
     /*free watch history*/
     temp->watchHistory = NULL;
     /*remove user from list*/
-    if(prev == NULL){
-        user_head = temp->next;
+    if(prev == NULL){   /*an einai o prwtos*/
+        if(temp->next == user_Sentinel){
+            user_head = NULL;
+        }
+        else{
+            user_head = temp->next;
+        }
     }
     else{
-        prev->next = temp->next;
+        prev->next = temp->next;  /*bazw to next tou prohgoumenou na deixnei sto next tou user pou thelw na diagrapsw*/
     }
     /*free(temp);*/
 }
@@ -356,10 +361,15 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
     if (temp->uid == user_Sentinel->uid) {
         return -1;
     }
+
     temp = user_head;
     int i = 0;
     while (temp->uid != user_Sentinel->uid) {
         temp_hist = temp->watchHistory;
+        if(temp_hist == NULL){
+            temp = temp->next;
+            continue;
+        }
         if (temp->uid != uid && temp_hist != NULL) {
             if (i % 2 == 0) {
                 if (NewHead == NULL) {
@@ -394,21 +404,22 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
         }
         temp = temp->next;
     }
-    if (temp_user != user_Sentinel) {
-        if (tempHead != NULL && tempTail != NULL) {
-            tempHead->next = tempTail; /*connect the two lists*/
-            tempTail->prev = tempHead;
-            temp_user->suggestedHead = NewHead;
-            temp_user->suggestedTail = NewTail;
-        } else if (tempHead != NULL && tempTail == NULL) {
-            tempHead->next = NULL;
-            temp_user->suggestedHead = NewHead;
-        }
-        /* Yparxoun mono treis periptoseis:
-        1. Na bei stin 'if' estw mia fora kai tha dimiourgithei toulachiston ena NewHead.
-        2. An bei parapano tha dimiourgithei toulachiston ena NewTail (first if).
-        3. Na den bei kamia, ola paramenoun NULL. */
+
+    if (tempHead != NULL && tempTail != NULL) {
+        tempHead->next = tempTail; /*connect the two lists*/
+        tempTail->prev = tempHead;
+        temp_user->suggestedHead = NewHead;
+        temp_user->suggestedTail = NewTail;
+    } else if (tempHead != NULL && tempTail == NULL) {
+        tempHead->next = NULL;
+        temp_user->suggestedHead = NewHead;
+        temp_user->suggestedTail = tempHead;/*teamHead einai to teleutaio stoixeio*/
     }
+    /* Yparxoun mono treis periptoseis:
+    1. Na bei stin 'if' estw mia fora kai tha dimiourgithei toulachiston ena NewHead.
+    2. An bei parapano tha dimiourgithei toulachiston ena NewTail (first if).
+    3. Na den bei kamia, ola paramenoun NULL. */
+    return 0;
 }
 struct suggested_movie* createList(movieCategory_t category, unsigned year) {
     /*ftiaxnei mia lista me ta movies pou exoun megalyterh h idia th xronia*/
