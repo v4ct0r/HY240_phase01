@@ -175,14 +175,14 @@ int main(int argc, char *argv[])
                 filtered_movie_search(uid, category1, category2, year);
                 /*print_F(uid,category1,category2,year);*/
                 break;
-                /* case 'T':
-                     if (sscanf(trimmed_line, "T %u", &mid) != 1) {
-                         fprintf(stderr, "Event T parsing error\n");
-                         break;
-                     }
-                     take_off_movie(mid);
-                     break;
-                 */case 'M':
+            case 'T':
+                if (sscanf(trimmed_line, "T %u", &mid) != 1) {
+                    fprintf(stderr, "Event T parsing error\n");
+                    break;
+                }
+                take_off_movie(mid);
+                break;
+            case 'M':
                 printf("M\nCategorized Movies:\n");
                 print_movies();
                 break;
