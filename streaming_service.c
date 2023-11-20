@@ -174,10 +174,10 @@ int add_new_movie(unsigned mid, movieCategory_t category, unsigned year){
         prev = temp;
         temp = temp->next;
     }
-    if(prev == NULL){
+    if(prev == NULL){/*an einai o prwtos*/
         new_movies_head = NewMovie;
     }
-    else{
+    else{/*topothetite to new movie anamesa sto prev kai to temp*/
         prev->next = NewMovie;
     }
     NewMovie->next = temp;
