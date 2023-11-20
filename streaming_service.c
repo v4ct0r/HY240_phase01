@@ -14,22 +14,28 @@ void print_users(){
     int i ;
     printf("Users:\n");
     while(temp->uid != user_Sentinel->uid) {
-        printf("   %d :\n", temp->uid);
-        printf("    Suggested: " );
+        printf(" %d :\n", temp->uid);
+        printf("  Suggested: " );
         temp_sug=temp->suggestedHead ;
         i=1;
         while(temp_sug!=NULL )  {
-            printf("<mid:%d,%d>",temp_sug->info.mid,i);
+            printf("mid:%d,%d",temp_sug->info.mid,i);
             i++;
             temp_sug=temp_sug->next;
+            if(temp_sug!=NULL){
+                printf(" , ");
+            }
         }
         temp_hist=temp->watchHistory;
         i=1;
-        printf("\n    Watch History:");
+        printf("\n  Watch History:");
         while (temp_hist!=NULL){
-            printf("<mid:%d,%d>",temp_hist->info.mid,i);
+            printf("mid:%d,%d",temp_hist->info.mid,i);
             i++ ;
             temp_hist=temp_hist->next ;
+            if(temp_hist!=NULL){
+                printf(" , ");
+            }
         }
         printf("\n");
         temp = temp->next;
@@ -38,9 +44,12 @@ void print_users(){
 }
 void print_U(){
     struct user *temp = user_head;
-    printf("Users = ");
+    if(temp == NULL){
+        return;
+    }
+    printf(" Users = ");
     while(temp->uid != user_Sentinel->uid) {
-        printf("%d", temp->uid);
+        printf("uid:%d", temp->uid);
         temp = temp->next;
         if(temp->uid!= user_Sentinel->uid)
             printf(",");
@@ -48,13 +57,12 @@ void print_U(){
     printf("\nDONE\n");
 }
 
-
 /*print new movies*/
 void print_A(){
     struct new_movie *temp = new_movies_head;
-    printf("  New movies = ");
+    printf(" New movies = ");
     while(temp != NULL) {
-        printf("MID:%u CAT:%d YEAR:%u", temp->info.mid, temp->category, temp->info.year);
+        printf("mid:%u,category:%d,year:%u", temp->info.mid, temp->category, temp->info.year);
         temp = temp->next;
         if(temp!=NULL)
             printf(" , ");
@@ -77,7 +85,7 @@ void print_F(int uid, movieCategory_t category1,movieCategory_t category2, unsig
     struct suggested_movie *temp_sug = temp->suggestedHead;
     int i = 1 ;
     while(temp_sug != NULL){
-        printf("<mid:%d,%d>",temp_sug->info.mid,i);
+        printf("mid:%d,%d",temp_sug->info.mid,i);
         i++;
         temp_sug = temp_sug->next;
         if(temp_sug != NULL){
@@ -207,6 +215,7 @@ void distribute_new_movies(void){
     new_movies_head = NULL;
 }
 void print_movies(void){
+    printf("Categorized Movies:\n");
     char *category_names[6] = {"Horror","Sci-fi","Drama","Romance","Documentary","Comedy"};
     struct movie *temp;
     int i ;
@@ -216,7 +225,7 @@ void print_movies(void){
         printf("  %s: ",category_names[i]);
         counter = 1 ;
         while(temp != NULL){
-            printf("<mid:%u,%d>",temp->info.mid,counter);
+            printf("mid:%u,%d",temp->info.mid,counter);
             counter++;
             temp = temp->next;
             if(temp != NULL){
@@ -242,11 +251,11 @@ void print_users_history(int uid, unsigned mid){
     struct user *temp = user_head;
     int i ;
     while(temp->uid != user_Sentinel->uid){
-        printf("  User %d Watch History: ",temp->uid);
+        printf(" User %d Watch History: ",temp->uid);
         struct movie *temp_movie = temp->watchHistory;
         i= 1 ;
         while(temp_movie != NULL){
-            printf("<mid:%u,%d>",temp_movie->info.mid,i);
+            printf("mid:%u,%d",temp_movie->info.mid,i);
             i++ ;
             temp_movie = temp_movie->next;
             if(temp_movie != NULL){
@@ -272,9 +281,9 @@ void print_user_history(int uid){
     }
     printf("W<uid:%d><mid:%u>\n",uid ,temp->watchHistory->info.mid);
     struct movie *temp_movie = temp->watchHistory;
-    printf("  User %d Watch History: ",temp->uid);
+    printf(" User %d Watch History: ",temp->uid);
     while (temp_movie!= NULL){
-        printf("<mid:%u>",temp_movie->info.mid);
+        printf("mid:%u",temp_movie->info.mid);
         temp_movie = temp_movie->next;
         if(temp_movie != NULL){
             printf(" , ");
@@ -333,7 +342,7 @@ void print_S(int uid){
     struct suggested_movie *temp_sug = temp->suggestedHead;
     int i = 1 ;
     while(temp_sug != NULL){
-        printf("mid:<%d,%d>",temp_sug->info.mid,i);
+        printf("mid:%d,%d",temp_sug->info.mid,i);
         i++;
         temp_sug = temp_sug->next;
         if(temp_sug != NULL){
@@ -366,7 +375,7 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
     int i = 0;
     while (temp->uid != user_Sentinel->uid) {
         temp_hist = temp->watchHistory;
-        if(temp_hist == NULL){
+        if(temp_hist == NULL && temp->uid != uid){ /*an den exei watch history kai den einai o user pou psaxnw skip*/
             temp = temp->next;
             continue;
         }
@@ -378,7 +387,7 @@ int suggest_movies(int uid) {/*fiaxnw to suggestedHead kai to suggestedTail se t
                     tempHead->prev = NULL;
                 } else {
                     tempHead->next = (struct suggested_movie *) malloc(sizeof(struct suggested_movie));
-                    tempHead->next->prev = tempHead;
+                    tempHead->next->prev = tempHead; /*bazo to prev tou epomenou na deixnei ston current*/
                     tempHead = tempHead->next;
                 }
                 tempHead->info.mid = temp_hist->info.mid;
@@ -573,7 +582,7 @@ void take_off_movie(unsigned mid){
                         temp_sug->next->prev = prev_sug; /*bazei to prev tou epomenou na deixnei ston prohgoumeno*/
                     }
                 }
-                printf( " <%u> removed from <user:%d> suggested list\n",mid , temp_user->uid);
+                printf( " mid:%u removed from user:%d suggested list\n",mid , temp_user->uid);
                 break;/*an to vrei stamataei na psaxnei*/
             }
             prev_sug = temp_sug;
@@ -597,7 +606,7 @@ void take_off_movie(unsigned mid){
                 else{
                     prev_movie->next = temp_movie->next; /*bazei to next tou prohgoumenou na deixnei sto next tou user_temp*/
                 }
-                printf( " <%u> removed from <%s> Category list\n",mid ,category_names[i]);
+                printf( " %u removed from %s Category list\n",mid ,category_names[i]);
                 break;
             }
             prev_movie = temp_movie;
@@ -609,7 +618,7 @@ void take_off_movie(unsigned mid){
             temp_movie = category_table[i];
             int counter = 1 ;
             while(temp_movie != NULL){
-                printf("<%u,%d>",temp_movie->info.mid,counter);
+                printf("%u,%d",temp_movie->info.mid,counter);
                 counter++;
                 temp_movie = temp_movie->next;
                 if(temp_movie != NULL){

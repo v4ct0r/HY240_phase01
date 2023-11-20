@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
                     break;
                 }
                 register_user(uid);
-                /*printf("R <%d>\n   ",uid);
-                print_U();*/
+                printf("R <%d>\n",uid);
+                print_U();
                 break;
             case 'U':
                 if (sscanf(trimmed_line, "U %d", &uid) != 1) {
@@ -129,8 +129,8 @@ int main(int argc, char *argv[])
                     break;
                 }
                 unregister_user(uid);
-                /*printf("U <%d>\n   ",uid);
-                print_U();*/
+                printf("U <%d>\n",uid);
+                print_U();
                 break;
             case 'A':
                 if (sscanf(trimmed_line, "A %u %d %u", &mid, &category1,
@@ -139,24 +139,22 @@ int main(int argc, char *argv[])
                     break;
                 }
                 add_new_movie(mid, category1, year);
-                /*printf("A<%u><%d><%u>\n  ",mid,category1,year);
-                print_A();*/
+                printf("A<%u><%d><%u>\n",mid,category1,year);
+                print_A();
                 break;
 
             case 'D':
                 distribute_new_movies();
-                /*printf("D\nCategorized Movies:\n");
-                print_movies();*/
+                printf("D\nCategorized Movies:\n");
+                print_movies();
                 break;
             case 'W':
                 if (sscanf(trimmed_line, "W %d %u", &uid, &mid) != 2) {
                     fprintf(stderr, "Event W parsing error\n");
                     break;
                 }
-                /* printf("\n");*/
                 watch_movie(uid, mid);
-                /*print_users_history();
-                  print_user_history(uid);*/
+                print_user_history(uid);
                 break;
             case 'S':
                 if (sscanf(trimmed_line, "S %d", &uid) != 1) {
@@ -164,7 +162,7 @@ int main(int argc, char *argv[])
                     break;
                 }
                 suggest_movies(uid);
-                /*print_S(uid);*/
+                print_S(uid);
                 break;
             case 'F':
                 if (sscanf(trimmed_line, "F %d %d %d %u", &uid, &category1,
@@ -173,7 +171,7 @@ int main(int argc, char *argv[])
                     break;
                 }
                 filtered_movie_search(uid, category1, category2, year);
-                /*print_F(uid,category1,category2,year);*/
+                print_F(uid,category1,category2,year);
                 break;
             case 'T':
                 if (sscanf(trimmed_line, "T %u", &mid) != 1) {
@@ -183,11 +181,11 @@ int main(int argc, char *argv[])
                 take_off_movie(mid);
                 break;
             case 'M':
-                printf("M\nCategorized Movies:\n");
+                printf("M\n");
                 print_movies();
                 break;
             case 'P':
-                printf("P \n ");
+                printf("P\n");
                 print_users();
                 break;
             default:
